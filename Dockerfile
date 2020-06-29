@@ -19,10 +19,10 @@ RUN dotnet build "NetCoreDockerTest.csproj" -c Release -o /app/build
 #######################################################
 # Download the official ASP.NET Core SDK image
 # to build the project while creating the docker image
-ARG SONAR_PROJECT_KEY=robinmanuelthiel_microcommunication
-ARG SONAR_OGRANIZAION_KEY=robinmanuelthiel
-ARG SONAR_HOST_URL=https://sonarcloud.io
-ARG SONAR_TOKEN
+ARG SONAR_PROJECT_KEY=NetCoreDockerTest
+ARG SONAR_OGRANIZAION_KEY=admin
+ARG SONAR_HOST_URL=http://3.236.140.107:9000/
+ARG SONAR_TOKEN=4c89a767f608ca09215fc97f77e7d4250531e3e3
 
 # Install Sonar Scanner, Coverlet and Java (required for Sonar Scanner)
 RUN apt-get update && apt-get install -y openjdk-11-jdk
@@ -32,10 +32,10 @@ ENV PATH="$PATH:/root/.dotnet/tools"
 
 # Start Sonar Scanner
 RUN dotnet sonarscanner begin \
-  /k:"$f1a4d3e46eb84febecbaa8c0557be5033f81392d" \
-  /o:"$admin" \
-  /d:sonar.host.url="$http://3.236.140.107:9000/" \
-  /d:sonar.login="$f42685204feb35acc9291af870a68c9479f02f81" \
+  /k:"$SONAR_PROJECT_KEY" \
+  /o:"$SONAR_OGRANIZAION_KEY" \
+  /d:sonar.host.url="$SONAR_HOST_URL" \
+  /d:sonar.login="$SONAR_TOKEN" \
   /d:sonar.cs.opencover.reportsPaths=/coverage.opencover.xml
 
   
@@ -55,7 +55,7 @@ RUN dotnet test \
   /p:CoverletOutput="/coverage"
 
 # End Sonar Scanner
-RUN dotnet sonarscanner end /d:sonar.login="$f42685204feb35acc9291af870a68c9479f02f81"
+RUN dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
 #######################################################
 # Step 2: Run the build outcome in a container        #
